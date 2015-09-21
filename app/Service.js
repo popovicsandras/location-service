@@ -3,6 +3,7 @@
 var http = require('http');
 var express = require('express');
 var swaggerUiMiddleware = require('swagger-ui-middleware');
+var LocationFinder = require('./LocationFinder');
 
 var Service = {
 
@@ -16,6 +17,13 @@ var Service = {
             res.status(200)
                 .send('Hello world');
         });
+
+        app.get('/locations/:ip', function(req, res) {
+
+            var locationFinder = new LocationFinder();
+            res.status(200).json(locationFinder.lookup(req.params.ip));
+        });
+
 
         app.use(function(req, res) {
             res.status(404)
