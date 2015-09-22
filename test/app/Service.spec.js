@@ -8,7 +8,7 @@ var Service = require('../../app/Service');
 var LocationFinder = require('../../app/LocationFinder');
 var config = require('config');
 
-describe('Service', function() {
+describe.skip('Service', function() {
 
     var app;
 
