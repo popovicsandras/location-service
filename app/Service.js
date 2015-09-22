@@ -21,7 +21,9 @@ var Service = {
         app.get('/locations/:ip', function(req, res) {
 
             var locationFinder = new LocationFinder();
+          
             res.status(200).json(locationFinder.lookup(req.params.ip));
+
         });
 
 
