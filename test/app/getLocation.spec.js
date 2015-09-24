@@ -4,38 +4,91 @@
 
 var LocationFinder = require('../../app/LocationFinder');
 
-function getLocation() {
-    var locationFinder = new LocationFinder();
-    return locationFinder.lookup();
+var LocationAPI = function() {}
+
+LocationAPI.prototype = {
+
+    locationFinder: new LocationFinder(),
+
+    get: function(request, response) {
+        function parse(csv) {
+            return csv.split(',');
+        }
+        response.json(this.locationFinder.lookup(parse(request.params.ip)));
+    }
 }
 
-describe('getLocationData', function() {
 
-    it('should invoke LocationFinder\'s lookup', function() {
+describe('LocationAPI', function() {
 
-        var request = {},
-            response = {},
-            locationFinderLookupStub = sinon.spy(LocationFinder.prototype, 'lookup');
+    var locationAPI,
+        locationFinder;
 
-        getLocation(request, response);
-
-        expect(locationFinderLookupStub).to.have.been.called;
-        locationFinderLookupStub.restore();
+    beforeEach(function() {
+        locationFinder = new LocationFinder();
+        locationAPI = new LocationAPI();
+        locationAPI.locationFinder = locationFinder;
     });
 
-    it('should return locationFinder\'s result', function() {
+    it('should response locationFinder\'s result in the response', function() {
 
-        var request = {},
-            response = {},
-            expectedLocation = {},
-            locationFinderLookupStub = sinon.stub(LocationFinder.prototype, 'lookup', function() {
-                return expectedLocation;
-            });
+        var request = {
+                params: {
+                    ip: ''
+                }
+            },
+            response = {
+                json: sinon.spy()
+            },
+            expectedLocation = {};
 
-        var location = getLocation(request, response);
+        sinon.stub(locationFinder, 'lookup', function() {
+            return expectedLocation;
+        });
 
-        expect(location).to.be.eql(expectedLocation);
+        locationAPI.get(request, response);
 
-        locationFinderLookupStub.restore();
+        expect(response.json).to.have.been.calledWith(expectedLocation);
     });
+
+    it('should pass an ip to LocationFinder\'s lookup', function() {
+
+        // Arrange
+        var request = {
+                params: {
+                    ip: '24.24.24.24'
+                }
+            },
+            response = {
+                json: sinon.spy()
+            },
+            locationFinderLookup = sinon.spy(locationFinder, 'lookup');
+
+        // Act
+        locationAPI.get(request, response);
+
+        // Assert
+        expect(locationFinderLookup).to.have.been.calledWith(['24.24.24.24']);
+    });
+
+    it('should pass multiple ips to LocationFinder\'s lookup', function() {
+
+        // Arrange
+        var request = {
+                params: {
+                    ip: '24.24.24.24,55.55.55.55'
+                }
+            },
+            response = {
+                json: sinon.spy()
+            },
+            locationFinderLookup = sinon.spy(locationFinder, 'lookup');
+
+        // Act
+        locationAPI.get(request, response);
+
+        // Assert
+        expect(locationFinderLookup).to.have.been.calledWith(['24.24.24.24', '55.55.55.55']);
+    });
+
 });
