@@ -1,73 +1,36 @@
-/* global beforeEach, afterEach, describe, it, assert, expect, sinon */
+/* global afterEach, describe, it, expect, sinon */
 
 'use strict';
 
 var supertest = require('supertest');
 
 var Service = require('../../app/Service');
-var LocationFinder = require('../../app/LocationFinder');
-var config = require('config');
+var LocationAPI = require('../../app/LocationAPI');
 
-describe.skip('Service', function() {
+describe('Service', function() {
 
     var app;
 
-    beforeEach(function() {
-        var logger = function(req, res, next) {
-            next();
-        };
-
-        app = Service.create(logger, config);
-    });
-
     afterEach(function() {
-        app.close();
+        if (app) {
+            app.close();
+        }
     });
 
+    it('should call locationAPI' , function(done) {
 
-    describe('get location info', function() {
+        var locationAPI = new LocationAPI();
+        var locationAPIGet = sinon.spy(locationAPI, 'get');
 
-        it('should return 200' , function(done) {
+        app = new Service(locationAPI).start(1234);
 
-            supertest(app)
-                .get('/locations/128.001.001.231')
-                .expect(function(res) {
-                    expect(res.statusCode).to.be.equal(200);
-                })
-                .end(done);
-        });
-
-        it('should return the correct json response', function(done) {
-
-            var locationFinderLookupSpy = sinon.stub(LocationFinder.prototype, 'lookup', function() {
-                return {
-                    host: '128.001.001.231'
-                };
-            });
-
-            supertest(app)
-                .get('/locations/128.001.001.231')
-                .expect(function(res) {
-                    expect(locationFinderLookupSpy).to.have.been.calledWith('128.001.001.231');
-                    expect(res.body.host).to.be.equal('128.001.001.231');
-                    locationFinderLookupSpy.restore();
-                })
-                .end(done);
-
-        });
-
-        it.skip('should return 404 if bad parameters' , function(done) {
-
-            supertest(app)
-                .get('/locations/whatever')
-                .expect(function(res) {
-                    expect(res.statusCode).to.be.equal(404);
-                })
-                .end(done);
-        });
-
+        supertest(app)
+            .get('/api/countries/128.1.1.231')
+            .expect(function() {
+                expect(locationAPIGet).to.have.been.called;
+            })
+            .end(done);
     });
-
 });
 
 

@@ -4,8 +4,8 @@
   "description": "RESTful Microservice skeleton",
   "main": "service.js",
   "scripts": {
-    "start": "export NODE_ENV=production; node service.js",
-    "serve": "export NODE_ENV=development; nodemon service.js",
+    "start": "export NODE_ENV=production; node app.js",
+    "serve": "export NODE_ENV=development; nodemon app.js",
     "pretest": "jshint --reporter=node_modules/jshint-stylish **/**.js",
     "test": "export NODE_ENV=test; mocha test/setup.js test/**/**.js"
   },
