@@ -1,5 +1,4 @@
-# Microservice
-Microservice skeleton
+# Location service API
 
 ## Pre-requisites
 
@@ -13,14 +12,11 @@ In the project directory, launch:
 
 You'll need to do this once or when dependencies change.
 
-## Run
-
 ## Start the service
 
 in development mode
 
     npm run serve
-
 
 in production mode:
 
@@ -28,6 +24,6 @@ in production mode:
 
 ## Test
 
-Jshint checking ant tests:
+Jshint checking and tests:
 
     npm test
