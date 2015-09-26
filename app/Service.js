@@ -14,27 +14,13 @@ Service.prototype = {
         var app = express(),
             locationAPI = this.locationAPI;
 
-        // ****old code before fetch****
-        // app.get('/', function(req, res) {
-        //     res.status(200)
-        //         .send('Hello world');
-        // });
-
-        // app.get('/locations/:ip', function(req, res) {
-
-        //     var locationFinder = new LocationFinder();
-          
-        //     res.status(200).json(locationFinder.lookup(req.params.ip));
-
-        // });
-
-
-        // app.use(function(req, res) {
-        //     res.status(404)
-        //         .send('File not found!');
-
         app.get('/api/countries/:ip', function(request, response) {
             locationAPI.get(request, response);
+        });
+
+        // query if necessary/how to handle empty IP
+        app.get('/api/countries/', function(request, response) {
+            response.status(200).send('Please supply IP address(s)');
         });
 
         var server = http.createServer(app);
