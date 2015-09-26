@@ -1,6 +1,8 @@
 var geoip = require('geoip-lite');
 var countries = require('country-data').countries;
 
+'use strict';
+
 function LocationFinder() {}
 
 LocationFinder.prototype = {
@@ -15,7 +17,7 @@ LocationFinder.prototype = {
     	result.country.iso_code = geoData.country;
     	result.host = ip
 			
-			return result; 
+		return result; 
 
     }
 };

@@ -2,39 +2,44 @@
 
 var http = require('http');
 var express = require('express');
-var swaggerUiMiddleware = require('swagger-ui-middleware');
-var LocationFinder = require('./LocationFinder');
+var LocationAPI = require('./LocationAPI');
 
-var Service = {
+function Service(locationAPI) {
+    this.locationAPI = locationAPI ? locationAPI: new LocationAPI();
+}
 
-    create: function(logger, config) {
-        var app = express();
+Service.prototype = {
 
-        app.use(logger);
-        swaggerUiMiddleware.hostUI(app, {overrides: __dirname + '/../swagger-ui/'});
+    start: function(port) {
+        var app = express(),
+            locationAPI = this.locationAPI;
 
-        app.get('/', function(req, res) {
-            res.status(200)
-                .send('Hello world');
-        });
+        // ****old code before fetch****
+        // app.get('/', function(req, res) {
+        //     res.status(200)
+        //         .send('Hello world');
+        // });
 
-        app.get('/locations/:ip', function(req, res) {
+        // app.get('/locations/:ip', function(req, res) {
 
-            var locationFinder = new LocationFinder();
+        //     var locationFinder = new LocationFinder();
           
-            res.status(200).json(locationFinder.lookup(req.params.ip));
+        //     res.status(200).json(locationFinder.lookup(req.params.ip));
 
-        });
+        // });
 
 
-        app.use(function(req, res) {
-            res.status(404)
-                .send('File not found!');
+        // app.use(function(req, res) {
+        //     res.status(404)
+        //         .send('File not found!');
+
+        app.get('/api/countries/:ip', function(request, response) {
+            locationAPI.get(request, response);
         });
 
         var server = http.createServer(app);
-        server.listen(config.get('port'), function() {
-            console.log('Service started on port ' + config.get('port'));
+        server.listen(port, function() {
+            console.log('Service started on port ' + port);
         });
 
         return server;
