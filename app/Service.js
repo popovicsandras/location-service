@@ -7,6 +7,7 @@ var HealthcheckAPI = require('./HealthcheckAPI');
 var VersionAPI = require('./VersionAPI');
 
 function Service(apis) {
+    apis = apis || {};
     this.locationAPI = apis.locationAPI ? apis.locationAPI: new LocationAPI();
     this.healthcheckAPI = apis.healthcheckAPI ? apis.healthcheckAPI: new HealthcheckAPI();
     this.versionAPI  = apis.versionAPI ? apis.versionAPI : new VersionAPI();
