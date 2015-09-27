@@ -6,6 +6,7 @@ var supertest = require('supertest');
 
 var Service = require('../../app/Service');
 var LocationAPI = require('../../app/LocationAPI');
+var HealthcheckAPI = require('../../app/HealthcheckAPI');
 
 describe('Service', function() {
 
@@ -17,7 +18,7 @@ describe('Service', function() {
         }
     });
 
-    it('should call locationAPI' , function(done) {
+    it('should call locationAPI at /api/countries' , function(done) {
 
         var locationAPI = new LocationAPI();
         var locationAPIGet = sinon.spy(locationAPI, 'get');
@@ -28,6 +29,22 @@ describe('Service', function() {
             .get('/api/countries/128.1.1.231')
             .expect(function() {
                 expect(locationAPIGet).to.have.been.called;
+            })
+            .end(done);
+    });
+
+    it('should call healthcheckAPI at /admin/healthcheck' , function(done) {
+
+        var locationAPI = new LocationAPI();
+        var healthcheckAPI = new HealthcheckAPI();
+        var healthcheckAPIGet = sinon.spy(healthcheckAPI, 'get');
+
+        app = new Service(locationAPI, healthcheckAPI).start(1234);
+
+        supertest(app)
+            .get('/admin/healthcheck')
+            .expect(function() {
+                expect(healthcheckAPIGet).to.have.been.called;
             })
             .end(done);
     });
