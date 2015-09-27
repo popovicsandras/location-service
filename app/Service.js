@@ -5,6 +5,7 @@ var express = require('express');
 var LocationAPI = require('./LocationAPI');
 var HealthcheckAPI = require('./HealthcheckAPI');
 var VersionAPI = require('./VersionAPI');
+var swaggerUiMiddleware = require('swagger-ui-middleware');
 
 function Service(apis) {
     apis = apis || {};
@@ -20,6 +21,8 @@ Service.prototype = {
             locationAPI = this.locationAPI,
             healthcheckAPI = this.healthcheckAPI,
             versionAPI = this.versionAPI;
+
+        swaggerUiMiddleware.hostUI(app, {overrides: __dirname + '/../swagger-ui/'});
 
         app.get('/api/countries/:ip', function(request, response) {
             locationAPI.get(request, response);
