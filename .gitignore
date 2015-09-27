@@ -35,3 +35,6 @@
 ## File-based project format:
 *.ipr
 *.iws
+
+# Removing personal notes file
+notes.txt
