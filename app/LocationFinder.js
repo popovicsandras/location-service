@@ -1,37 +1,39 @@
 'use strict';
+var geolite = require('node-geolite2');
+geolite.init();
 
-var geoip = require('geoip-lite');
-var countries = require('country-data').countries;
+function LocationFinder() {
 
-function LocationFinder() {}
+}
 
 LocationFinder.prototype = {
     lookup: function(ip) {
 
-        function getIPdata(single_ip) {
-
-            var geoData = geoip.lookup(single_ip);
-        
-            var entry = {country: {}};
-            entry.country.language = countries[geoData.country].languages[0]; // potential here for multiple languages so limit to first
-            entry.country.name = countries[geoData.country].name;
-            entry.country.geoname_id = 'tbc'; // maxmind does provide this just not sure how to access yet from the geo lite library:  http://dev.maxmind.com/geoip/geoip2/geoip2-csv-databases/
-            entry.country.iso_code = geoData.country;
-            entry.host = single_ip;
-                
-            return entry; 
-
+      return ip.map( function(ip){
+        try {
+          var result = geolite.getGeoDataSync(ip);
         }
-
-        var result = [];
-
-        var index;
-        for (index = 0; index < ip.length; index++) {
-           result.push(getIPdata(ip[index]));
+        catch(e) {
+          return {host: ip, error: 'Unknown host: ' + ip};
         }
+        return this.serialize(result, ip);
+      }, this);
 
-        return result;
-
+    },
+    serialize: function(geolite_response, ip) {
+      if(geolite_response) {
+        var result = {country:{}};
+        result.country.language = 'en';
+        result.country.iso_code = geolite_response.country.iso_code;
+        result.country.name = geolite_response.country.names.en;
+        result.host = ip;
+      } else {
+        var result = {};
+        result.host = ip;
+        result.error = "The address " + ip + " is not in the database."
+      };
+      
+      return result;
     }
 };
 
